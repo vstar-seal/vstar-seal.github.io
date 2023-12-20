@@ -20,7 +20,7 @@ function onResize() {
 window.addEventListener('resize', onResize);
 
 window.addEventListener('scroll', function() {
-    if (window.innerWidth > 600) {
+    if (window.innerWidth > 900) {
         var scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
         var dArticleBottom = dArticle.offsetTop + dArticle.offsetHeight;
         var dContentsActualTop = scrollPosition > originalOffsetTop ? scrollPosition : originalOffsetTop;
