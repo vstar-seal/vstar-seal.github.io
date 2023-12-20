@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="template.v2.js"></script>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="https://d3js.org/d3-collection.v1.min.js"></script>
+        <script src="https://rawgit.com/nstrayer/slid3r/master/dist/slid3r.js"></script>
+        <script src="cross_fade.js"></script>
+        <link rel="stylesheet" href="style.css">
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script>
+    </head>
+    <body>
+        <div class="header-container">
+            <div class="header-content">
+              <h1><em>V</em><sup>*</sup>: Guided Visual Search as a Core Mechanism in Multimodal LLMs</h1>
+              <div class="button-container">
+                <a href="#" class="button">Paper</a>
+                <a href="https://github.com/penghao-wu/vstar" class="button">Code</a>
+              </div>
+            </div>
+            <div class="header-image">
+                <img src="images/teaser_eye.png" alt="Teaser Image" class="teaser-image">
+            </div>
+        </div>
+    <d-article>
+        <div class="byline">
+            <div class="byline-container">
+                <div class="byline-column">
+                    <h3>Authors</h3>
+                    <p><a href="https://penghao-wu.github.io/" class="author-link">Penghao Wu</a></p>
+                    <p><a href="https://www.sainingxie.com/" class="author-link">Saining Xie</a></p>
+                </div>
+                <div class="byline-column">
+                    <h3>Affiliations</h3>
+                    <p><a href="https://cse.ucsd.edu/" class="affiliation-link">UC San Diego</a></p>
+                    <p><a href="https://cs.nyu.edu/home/index.html" class="affiliation-link">New York University</a></p>
+                </div>
+                <div class="byline-column">
+                    <h3>Date</h3>
+                    <p>Dec. 18, 2023</p>
+                </div>
+            </div>
+        </div>
+        <d-contents>
+            <nav>
+                <h4>Contents</h4>
+                <div><a href="#introduction">Visual Search for Multimodal Intelligence</a></div>
+                <div><a href="#framework">SEAL Framework</a></div>
+                <div><a href="#Vstarbench"><i>V</i><sup>*</sup>Bench</a></div>
+                <div><a href="#VisualSearchExp">Effectiveness of <i>V</i><sup>*</sup></a></div>
+            </nav>
+        </d-contents>
+        
+        <p>We introduce <i>V</i><sup>*</sup>, an LLM-guided visual search mechanism that employs the world knowledge and common sense encapsulated in LLMs for efficient visual querying. Integrating it with an MLLM facilitates collaborative reasoning, contextual understanding, and the targeted search for specific visual information. This integration results in a new MLLM meta-architecture, named <b>S</b>how, S<b>EA</b>rch, and Tel<b>L</b> (SEAL). 
+        </p>
+        <section id="introduction">
+            <h2>Visual Search for Multimodal Intelligence</h2>
+            <p>
+                A salient aspect of human cognitive reasoning process involving visual information is the ability to conduct <i>visual search</i> - the process of efficiently recognizing and localizing key objects within intricate real-world scenes. This mechanism plays a fundamental role in the interaction with the environment and happens nearly everywhere, from finding keys on a cluttered table to searching for a friend in the crowd. Besides, it is also an indispensable step for complex tasks that require multiple reasoning steps. And the intricacy of visual search has been studied for a long time in cognitive science and vision science <d-cite key="torralba2006contextual"></d-cite><d-cite key="peelen2011neural"></d-cite><d-cite key="peelen2011neural"></d-cite><d-cite key="wolfe2017five"></d-cite><d-cite key="wolfe2020visual"></d-cite><d-cite key="wang2023statistical"></d-cite>.
+            </p>
+            <p>
+                Multimodal LLMs (MLLMs) <d-cite key="blip2"></d-cite><d-cite key="flamingo"></d-cite><d-cite key="minigpt4"></d-cite><d-cite key="llava"></d-cite><d-cite key="InstructBLIP"></d-cite>  try to emulate humans' ability to integrate multimodal information and perform general tasks. Significant advances have been made in this domain
+                However, a key limitation of current MLLMs is their dependence on pre-trained (and often frozen) vision encoders, such as the CLIP image encoder. This dependency forms a major bottleneck for visual information processing. 
+                The vision encoder is often trained on images with low resolution, such as 224&times;224 or 336&times;336 pixels. During deployment, images are also often resized to a lower resolution. As a result, the encoder may overlook important details in high-resolution images. Additionally, current MLLMs struggle to identify which essential visual details are missing or unclear in the images they process. Nor can they proactively seek out or request this missing information. In such senarios, even the most powerfull multimodal Intelligent system GPT-4V would fail while our MLLM with visual search mechanism can make correct responses.
+                <d-figure>
+                    <figure class="l-body">
+                        <div id='figure1_div'></div>
+                        <script src="figure1.js"></script>
+                        <figcaption>
+                            Examples on which GPT-4V fails while SEAL with the visual search mechanism succeeds. Even though GPT-4V has a much more powerful LLM (GPT-4) than ours (Vicuna-7B), it still occasionally struggles in scenarios that demand extensive visual processing. These situations require precise visual grounding in high-resolution images, a task where the visual search mechanism becomes essential. Click the small images at the bottom to choose different examples.
+                        </figcaption>
+                    </figure>
+                </d-figure>
+            </p>
+        </section>
+        <section id="framework">
+            <h2>SEAL Framework</h2>
+            <p>
+            Our proposed SEAL is a general framework comprised of a VQA LLM and a visual search model which collaborate and interact through the visual working memory (VWM). In this work, we provide a simple instantiation of the SEAL framework to validate its effectiveness and choose the LLaVA-7B structure as the MLLM in the SEAL framework.
+                <d-figure>
+                    <figure>
+                        <img src="images/pipeline_v2.jpg" alt="SEAL Framework">
+                        <figcaption>An instantiation of the proposed SEAL framework. The left part is the VQA LLM which takes all the information in the VWM to answer questions. The right part demonstrates the LLM-guided visual search process.</figcaption>
+                    </figure>
+                </d-figure>
+            </p>
+            <h3 id="VQALLM">VQA LLM with Visual Working Memory</h3>
+            <p>
+                Our VQA LLM first actively reasons about whether the initial visual feature from the vision encoder is enough to answer the question. If not, it explicitly lists all the needed but missing information in the format of a list of target objects. Then, it initializes a VWM which will contain 1) initial textual question; 2) initial global image; 3) target object crops after search; 4) coordinates of the searched targets. Next, the visual search model searches over the image and localizes each required target. A region containing the retrieved target is then cropped from the whole image and filled in the VWM together with the coordinates of the target. After that, the VQA LLM processes the information contained in the VWM and generates the response accordingly.
+            </p>
+            <h3 id="VisualSearch"><i>V</i><sup>*</sup>: LLM-guided Visual Search</h3>
+            <p>
+                Given a high-resolution image, it is likely that the target object can not be accurately identified and localized when just viewing the whole image as a miniature. To tackle this problem, one intuitive solution is dividing the image into fixed-size small sub-images and exhaustively conducting the localization on each sub-image. However, this simple strategy becomes prohibitively inefficient when considering the case of any resolution images. 
+            </p>
+            <p>
+                As humans' visual search process is guided by contextual scene guidance and top-down feature guidance, we adopt similar ideas to design the visual search model in the <i>V</i><sup>*</sup> algorithm utilizing an MLLM which encapsulates a mass of common sense knowledge about the world. In order to complete the whole searching process, we also equip the MLLM with localization ability with localization decoders.
+            </p>
+            <p>With this visual search model, our <i>V</i><sup>*</sup> algorithm goes as follows. Given an image and a textual expression of the target object, the MLLM first attempts to locate the target. In this step, \(\bm{v}_{loc}\) corresponding to the target object generated by the MLLM is fed to both \(D_{tl}\) and \(D_{cl}\) to obtain the coordinates with confidence score and the heatmap. When no object is located in the current image (the confidence score is smaller than a pre-defined threshold), we scrutinize the heatmap for possible target-specific cues. 
+    
+                The heatmap highlights regions that look similar to the queried target object, representing the target-specific cue. When the target-specific cue is prominent (<i>ie.</i> the maximum value of the heatmap is larger than a threshold \(\delta\)), we use it as guidance for the search. Otherwise, we ask the MLLM what is the most likely location of the target object in the image. This requires the MLLM to utilize its common sense knowledge and combine it with the image context to give us the contextual cue about the target. After getting an expression indicating the region where the target object is likely to be found, we prompt the MLLM to locate this expression with the \(D_{cl}\) decoder and get the heatmap corresponding to the contextual cue. 
+                
+                Then, we split the current image into smaller sub-images and assign them scores indicating their priorities to be explored based on the target-specific cue heatmap or the contextual cue heatmap. Based on the priorities, the sub-images are cropped and processed in turn. This recursive process continues until we successfully locate the target object or the current image patch is smaller than a pre-defined threshold.
+    
+                <d-figure>
+                    <figure>
+                        <img src="images/vs_algo.jpg" alt="LLM-guided Visual Search Algorithm">
+                        <!-- <figcaption>An instantiation of the proposed SEAL framework. The left part is the VQA LLM which takes all the information in the VWM to answer questions. The right part demonstrates the LLM-guided visual search process.</figcaption> -->
+                    </figure>
+                </d-figure>
+            
+            </p>
+            <h3 id="Astar">Connection to A<sup>*</sup> Algorithm</h3>
+            <p>
+                Our LLM-guided visual search <i>V</i><sup>*</sup> algorithm shares some similarities with the informed search algorithm A<sup>*</sup>. The A<sup>*</sup> search algorithm is a path search algorithm which finds the shortest path between a start and a goal node using a heuristic to estimate the cost. The LLM-guided visual search <i>V</i><sup>*</sup> algorithm can viewed as a special case of A<sup>*</sup> where the sub-images are viewed as nodes and \(g(n)\) is a positive constant for all \(n\) and the heuristic function \(h(n)\) is \(-1\times\) (score calculated from the heatmap). However, the goal of the A<sup>*</sup> search algorithm is to find a path with the minimum cost from the start to the goal, while in our case, we only care about the total number of steps needed to find the goal.
+            </p>
+        </section>
+        
+        <section id="Vstarbench">
+            <h2><i>V</i><sup>*</sup>Bench</h2>  
+            <p>
+                Our multimodal VQA benchmark <i>V</i><sup>*</sup>Bench is built on 191 high-resolution images from SAM <d-cite key="SAM"></d-cite>.
+    
+                <i>V</i><sup>*</sup>Bench contains two sub-tasks: attribute recognition and spatial relationship reasoning. The attribute recognition task has 115 samples and requires the model to recognize a certain type of attribute (<i>eg.</i> color, material) of an object. The spatial relationship reasoning task has 76 samples and asks the model to determine the relative spatial relationship between two objects. These tasks emphasize the perceptual capability of the multimodal models.
+    
+                <d-figure>
+                    <figure class="l-body">
+                        <div id='figure2_div'></div>
+                        <script src="figure2.js"></script>
+                        <figcaption>
+                            Examples of <i>V</i><sup>*</sup>Bench. The top row belongs to the attribute recognition task while the bottom row belongs to the spatial relationship reasoning task. The correct option is in green. Click the small images at the bottom to choose different examples.
+                        </figcaption>
+                    </figure>
+                </d-figure>
+                We evaluate SEAL with other open-source end-to-end MLLMs and LLM-tool-using systems on the proposed <i>V</i><sup>*</sup>.
+    
+                <d-figure>
+                        <img src="images/table.jpg" alt="<i>V</i><sup>*</sup> Results" width="60%" style="display: block; margin-left: auto; margin-right: auto;">
+                        <figcaption>Evaluation of multimodal systems on <i>V</i><sup>*</sup>Bench. Our model shows superior performance, validating the necessity of incorporating the visual search mechanism into MLLMs.</figcaption>
+                </d-figure>
+            </p>
+        </section>
+        
+        <section id="VisualSearchExp">
+            <h2>Effectiveness of <i>V</i><sup>*</sup></h2>
+            <p>
+                We evaluate different search strategies in terms of search length on 245 target objects in <i>V</i><sup>*</sup>Bench. The search length here is defined as the number of search steps from the initial image to the one where the target is located. We compare our LLM-guided search strategy with two baselines. The random baseline adopts the random strategy to pick a random sub-image to explore, and the sequential baseline searches the sub-images in sequential order. These two strategies are evaluated in breadth-first search (BFS) and depth-first search settings respectively.
+                <d-figure>
+                    <img src="images/search_path.jpg" alt="<i>V</i><sup>*</sup> Results" width="50%" style="display: block; margin-left: auto; margin-right: auto;">
+                    <figcaption>Evaluation of different search strategies in terms of search length on <i>V</i><sup>*</sup>Bench. Our LLM-guided search could greatly reduce the average search length and both two guiding cues are helpful for the search process</figcaption>
+                </d-figure>
+
+                <d-figure>
+                    <figure class="l-body">
+                        <div id='figure3_div'></div>
+                        <script src="figure3.js"></script>
+                        <figcaption>
+                            Examples of the LLM-guided visual search process. Click the arrow to see different step of the visual search process. Click the small images at the bottom to choose different examples.
+                        </figcaption>
+                    </figure>
+                </d-figure>
+                
+            </p>
+        </section>
+        
+        </d-article>
+        <d-appendix>
+            <h3>BibTeX</h3>
+            <p class="bibtex">
+                @article{vstar,<br>
+                &nbsp;&nbsp;title={V*: Guided Visual Search as a Core Mechanism in Multimodal LLMs},<br>
+                &nbsp;&nbsp;author={Penghao Wu and Saining Xie},<br>
+                &nbsp;&nbsp;year={2023},<br>
+                &nbsp;&nbsp;journal={arXiv preprint arXiv:2312},<br>
+                }
+            </p>
+
+            <d-footnote-list></d-footnote-list>
+            <d-citation-list></d-citation-list>
+          </d-appendix>
+          
+            <d-footnote-list></d-footnote-list>
+            <d-citation-list></d-citation-list>
+        </d-appendix>
+
+          <!-- bibliography will be inlined during Distill pipeline's pre-rendering -->
+        <d-bibliography src="bibliography.bib"></d-bibliography>
+
+        <!-- <script type="text/bibliography">
+        
+        </script> -->
+        <script src="contents_bar.js"></script>
+        
+        
+
+    </body>
+</html>

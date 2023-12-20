@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <meta charset=utf-8>
+<head>
+    <meta name="Attribution Maps"/>
+</head>
+
+<body onkeydown="handleKeyDown(event)">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://rawgit.com/nstrayer/slid3r/master/dist/slid3r.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="cross_fade.js"></script>
+    <script>
+        function handleKeyDown(event) {
+            if (event.keyCode == 39) {
+                window.location.href = "figure3.html";
+            }
+        }
+    </script>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col s12">
+                <div class="card teal">
+                   <div class="card-content white-text">
+                     <span class="card-title"><b style="font-size:36px;">Sense and Saliency</b></span>
+                     <p style="font-size:20px;">
+                         Machine learning models are so good at certain tasks
+                         they outperform humans. The canonical example
+                         is image classification: determining which object is
+                         depicted in an image. But how do these models
+                         correctly reocgnize objects?
+                     </p>
+                     </br>
+                     <p style="font-size:20px;">
+                         Integrated gradients is a popular method to compute
+                         which features were most important towards the output prediction. We calculate the feature importance for every pixel in the input image \(x\)
+                         and plot the result below in a saliency map. Lighter pixels indicate more influential ones. As a baseline
+                         \(x'\), we use the constant black image. Some of the pixel attributions may seem unintuitive. But why? To understand
+                         why integrated gradients highlights the pixels it does, we will need to understand
+                         where the above equation comes from, and what it is computing.
+                     </p>
+                   </div>
+                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s8 offset-s2">
+                <div id='figure2_div'></div>
+                <script src="figure2.js"></script>
+            </div> 
+        </div>
+        <div class="row">
+            <div class="col s2 offset-s8">
+                <a href="figure3.html" class="waves-effect waves-light btn">next</a>
+            </div>    
+        </div>
+    </div>
+</body>
+</html>
