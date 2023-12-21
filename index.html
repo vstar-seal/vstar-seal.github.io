@@ -58,23 +58,24 @@
             </nav>
         </d-contents>
         
-        <p>We introduce <i>V</i><sup>*</sup>, an LLM-guided visual search mechanism that employs the world knowledge and common sense encapsulated in LLMs for efficient visual querying. Integrating it with an MLLM facilitates collaborative reasoning, contextual understanding, and the targeted search for specific visual information. This integration results in a new MLLM meta-architecture, named <b>S</b>how, S<b>EA</b>rch, and Tel<b>L</b> (SEAL). 
+        <p>We introduce <i>V</i><sup>*</sup>, an LLM-guided visual search mechanism that employs the world knowledge in LLMs for efficient visual querying. When combined with an MLLM, this mechanism enhances collaborative reasoning, contextual understanding, and precise targeting of specific visual elements.
+            This integration results in a new MLLM meta-architecture, named <b>S</b>how, S<b>EA</b>rch, and Tel<b>L</b> (SEAL). 
         </p>
         <section id="introduction">
             <h2>Visual Search for Multimodal Intelligence</h2>
             <p>
-                A salient aspect of human cognitive reasoning process involving visual information is the ability to conduct <i>visual search</i> - the process of efficiently recognizing and localizing key objects within intricate real-world scenes. This mechanism plays a fundamental role in the interaction with the environment and happens nearly everywhere, from finding keys on a cluttered table to searching for a friend in the crowd. Besides, it is also an indispensable step for complex tasks that require multiple reasoning steps. And the intricacy of visual search has been studied for a long time in cognitive science and vision science <d-cite key="torralba2006contextual"></d-cite><d-cite key="peelen2011neural"></d-cite><d-cite key="peelen2011neural"></d-cite><d-cite key="wolfe2017five"></d-cite><d-cite key="wolfe2020visual"></d-cite><d-cite key="wang2023statistical"></d-cite>.
+                A salient aspect of human cognitive reasoning process involving visual information is the ability to conduct <i>visual search</i> - the process of efficiently recognizing and localizing key objects within intricate real-world scenes. This mechanism plays a fundamental role in the interaction with the environment and happens everywhere, from finding keys on a cluttered table to searching for a friend in the crowd. Besides, it is also an indispensable step for complex tasks that require multiple reasoning steps. The intricacy of visual search has been studied for a long time in cognitive science and vision science <d-cite key="torralba2006contextual"></d-cite><d-cite key="peelen2011neural"></d-cite><d-cite key="peelen2011neural"></d-cite><d-cite key="wolfe2017five"></d-cite><d-cite key="wolfe2020visual"></d-cite><d-cite key="wang2023statistical"></d-cite>.
             </p>
             <p>
-                Multimodal LLMs (MLLMs) <d-cite key="blip2"></d-cite><d-cite key="flamingo"></d-cite><d-cite key="minigpt4"></d-cite><d-cite key="llava"></d-cite><d-cite key="InstructBLIP"></d-cite>  try to emulate humans' ability to integrate multimodal information and perform general tasks. Significant advances have been made in this domain
-                However, a key limitation of current MLLMs is their dependence on pre-trained (and often frozen) vision encoders, such as the CLIP image encoder. This dependency forms a major bottleneck for visual information processing. 
-                The vision encoder is often trained on images with low resolution, such as 224&times;224 or 336&times;336 pixels. During deployment, images are also often resized to a lower resolution. As a result, the encoder may overlook important details in high-resolution images. Additionally, current MLLMs struggle to identify which essential visual details are missing or unclear in the images they process. Nor can they proactively seek out or request this missing information. In such senarios, even the most powerfull multimodal Intelligent system GPT-4V would fail while our MLLM with visual search mechanism can make correct responses.
+                Multimodal LLMs (MLLMs) <d-cite key="blip2"></d-cite><d-cite key="flamingo"></d-cite><d-cite key="minigpt4"></d-cite><d-cite key="llava"></d-cite><d-cite key="InstructBLIP"></d-cite>  try to emulate humans' ability to integrate multimodal information and perform general tasks. Significant advances have been made in this domain, leveraging the strong reasoning capabilities of large language models.
+                However, a key limitation of current MLLMs is their dependence on pre-trained (and often frozen) vision encoders, such as the CLIP <d-cite key="CLIP"></d-cite> image encoder. This dependency forms a major bottleneck for visual information processing. 
+                The vision encoder is often trained on images with low resolution, such as 224&times;224 or 336&times;336 pixels. During deployment, images are also often resized to a lower resolution. As a result, the encoder may overlook important details in high-resolution images. Additionally, current MLLMs struggle to identify which essential visual details are missing or unclear in the images they process, nor can they proactively seek out or request this missing information. In such senarios, even the most powerfull multimodal intelligent system GPT-4V would fail while our MLLM with visual search mechanism can make correct responses.
                 <d-figure>
                     <figure class="l-body">
                         <div id='figure1_div'></div>
                         <script src="figure1.js"></script>
                         <figcaption>
-                            Examples on which GPT-4V fails while SEAL with the visual search mechanism succeeds. Even though GPT-4V has a much more powerful LLM (GPT-4) than ours (Vicuna-7B), it still occasionally struggles in scenarios that demand extensive visual processing. These situations require precise visual grounding in high-resolution images, a task where the visual search mechanism becomes essential. Click the small images at the bottom to choose different examples.
+                            Examples on which GPT-4V fails while SEAL with the <i>V</i><sup>*</sup> visual search mechanism succeeds. Even though GPT-4V has a much more powerful LLM (GPT-4) than ours (Vicuna-7B), it still occasionally struggles in scenarios that demand extensive visual processing. These situations require precise visual grounding in high-resolution images, a task where the visual search mechanism becomes essential. Click the small images at the bottom to choose different examples.
                         </figcaption>
                     </figure>
                 </d-figure>
@@ -83,30 +84,31 @@
         <section id="framework">
             <h2>SEAL Framework</h2>
             <p>
-            Our proposed SEAL is a general framework comprised of a VQA LLM and a visual search model which collaborate and interact through the visual working memory (VWM). In this work, we provide a simple instantiation of the SEAL framework to validate its effectiveness and choose the LLaVA-7B structure as the MLLM in the SEAL framework.
+                Our proposed Show, Search and Tell (SEAL) framework is a general  meta-architecture for MLLMs. It is comprised of a VQA LLM and a visual search model which collaborate and interact through the visual working memory (VWM).  In this work, we provide an instantiation of SEAL to validate its effectiveness and choose the LLaVA-7B model as the MLLM in the SEAL framework. 
+                
                 <d-figure>
                     <figure>
                         <img src="images/pipeline_v2.jpg" alt="SEAL Framework">
-                        <figcaption>An instantiation of the proposed SEAL framework. The left part is the VQA LLM which takes all the information in the VWM to answer questions. The right part demonstrates the LLM-guided visual search process.</figcaption>
+                        <figcaption>An instantiation of the proposed SEAL framework.  The left section represents the VQA LLM, which utilizes all the data within the Visual Working Memory to respond to questions. On the right, we illustrate the operational pipeline of the <i>V</i><sup>*</sup> visual search algorithm.</figcaption>
                     </figure>
                 </d-figure>
             </p>
             <h3 id="VQALLM">VQA LLM with Visual Working Memory</h3>
             <p>
-                Our VQA LLM first actively reasons about whether the initial visual feature from the vision encoder is enough to answer the question. If not, it explicitly lists all the needed but missing information in the format of a list of target objects. Then, it initializes a VWM which will contain 1) initial textual question; 2) initial global image; 3) target object crops after search; 4) coordinates of the searched targets. Next, the visual search model searches over the image and localizes each required target. A region containing the retrieved target is then cropped from the whole image and filled in the VWM together with the coordinates of the target. After that, the VQA LLM processes the information contained in the VWM and generates the response accordingly.
+                The visual search mechanism is not always engaged. The VQA LLM  first evaluates if the encoder's initial (global) visual features suffice for answering the question. If not, it explicitly lists all the needed but missing information in the format of a list of target objects. Then, it initializes a visual working memory (VWM). The VWM has four blocks, the &ltquestion&gt block contains the initial textual question; &ltglobal image&gt contains the initial image; &ltsearched targets&gt stores the target object crops after search; and &lttarget location&gt stores the coordinates of the searched targets. Next, the visual search model searches over the image and localizes each required target. A region containing the identified target is then cropped from the whole image. The cropped targets, along with their coordinates, are added to the VWM. After that, the VQA LLM processes the data contained in the VWM to generate the response accordingly. 
             </p>
             <h3 id="VisualSearch"><i>V</i><sup>*</sup>: LLM-guided Visual Search</h3>
             <p>
-                Given a high-resolution image, it is likely that the target object can not be accurately identified and localized when just viewing the whole image as a miniature. To tackle this problem, one intuitive solution is to patchify an image into uniformly sized small patches and perform the localization on each patch exhaustively. However, This brute-force strategy tends to be too inefficient for effectively managing images with very high resolutions
+                Similar to how people often zoom in on their phones for a clearer view, when dealing with a high-resolution image, it's possible that the target object cannot be precisely identified and located if only the entire image is viewed as a small thumbnail.To address this, one straightforward approach is to patchify an image into uniformly sized small patches and perform the localization on each patch exhaustively. This brute-force strategy tends to be too inefficient for effectively managing images with very high resolutions -- we need a smarter solution.
             </p>
             <p>
-                Drawing inspiration from how humans utilize contextual scene and top-down feature guidance in their visual search process, we've incorporated similar concepts into the design of the visual search model in <i>V</i><sup>*</sup>. This process utilizes an MLLM that encapsulates a vast amount of common sense knowledge, serving as heuristic guidance. In order to complete the whole searching process, we also equip the MLLM with localization ability with localization decoders.   
+                Drawing inspiration from how humans utilize contextual scene and top-down feature guidance in their visual search process, we've incorporated similar concepts into the design of the visual search model in <i>V</i><sup>*</sup>. This process utilizes an MLLM that encapsulates a vast amount of common sense knowledge, serving as heuristic guidance. In order to localize and crop the searched targets for VWM, it's also necessary to enhance the MLLM with additional localization capabilities.
             </p>
-            <p>With this visual search model, our <i>V</i><sup>*</sup> algorithm works as follows. Given an image and a textual expression of the target object, the <i>V</i><sup>*</sup> MLLM first attempts to locate the target. In this step, we obtain the target localization results (coordinates and confidence) and the search cue heatmap. When no object is located in the current image (the confidence score is smaller than a pre-defined threshold), we scrutinize the search cue heatmap for possible target-specific cues. 
+            <p>With this visual search model, our <i>V</i><sup>*</sup> algorithm works as follows. Given an image and a textual expression of the target object, the <i>V</i><sup>*</sup> MLLM first attempts to locate the target directly. In this step, we obtain the target localization results (coordinates and confidence) and the search cue heatmap. When no object is located (the confidence score falls below a threshold), we scrutinize the search cue heatmap for possible target-specific cues. 
     
-                The search cue heatmap highlights regions that look similar to the queried target object, representing the target-specific cue. When the target-specific cue is prominent (<i>ie.</i> the maximum value of the heatmap is larger than a threshold \(\delta\)), we use it as guidance for the search. Otherwise, we ask the MLLM what is the most likely location of the target object in the image. This requires the MLLM to utilize its common sense knowledge and integrates it with the image's context to provide the contextual cue about the target's whereabouts. Upon receiving an description of the region where the target object is likely located, we prompt the MLLM to locate the described area and produce a search cue heatmap corresponding to the contextual cue.
+                The search cue heatmap highlights regions that could potentially contain the queried target object. When the target-specific cue is prominent (<i>ie.</i> when the highest value in the heatmap exceeds the threshold \(\delta\)), we use it to guide the search directly. Otherwise, we ask the MLLM what is the most likely location of the target object in the image. This requires the MLLM to utilize its common sense knowledge and integrate it with the image's context to provide the contextual cue about the target's whereabouts. Upon receiving a description of the region where the target object is likely located, we prompt the MLLM to locate the described area and produce a search cue heatmap corresponding to the contextual cue.
                 
-                Then, we divide the current image into smaller sub-images and assign them search priority scores indicating their priorities to be explored based on the target-specific cue heatmap or the contextual cue heatmap. Based on the priorities, the sub-images are cropped and processed in turn. This recursive process continues until we successfully locate the target object or the current image patch is smaller than a pre-defined threshold.
+                Then, we use a simple strategy and recursively divide the image into 4 non-overlapping equal-sized patches. Subsequently, we assign search priority scores to these patches. The search priority score is calculated from the search cue heatmap (either target-specific or contextual). Based on the priority scores, the patches are then cropped and processed sequentially. This recursive procedure is repeated until the target object is located or the size of the current patch becomes smaller than a predetermined threshold.
     
                 <d-figure>
                     <figure>
@@ -116,7 +118,7 @@
                 </d-figure>
             
             </p>
-            <h3 id="Astar">Connection to A<sup>*</sup> Algorithm</h3>
+            <h3 id="Astar">Connection to <i>A</i><sup>*</sup> Algorithm</h3>
             <p>
                 The naming of our LLM-guided visual search <i>V</i><sup>*</sup> algorithm is inspired by its similarities to the informed search algorithm <i>A</i><sup>*</sup>. <i>A</i><sup>*</sup> is designed for pathfinding, aiming to identify the shortest route between a starting point and a goal by using a heuristic to approximate the cost. In the context of our LLM-guided visual search, <i>V</i><sup>*</sup> can be seen as a unique variant of <i>A</i><sup>*</sup>, where sub-images are treated as nodes. The cost function \(g(n)\) is set as a uniform positive constant for all \(n\) and the heuristic function \(h(n)\) is defined as the negative of the priority score derived from the search cue heatmap.  While the <i>A</i><sup>*</sup> algorithm's objective is to find a path with minimal cost from start to goal, our focus with <i>V</i><sup>*</sup> is solely on minimizing the total number of steps required to locate the goal.
             </p>
@@ -125,9 +127,9 @@
         <section id="Vstarbench">
             <h2><i>V</i><sup>*</sup>Bench</h2>  
             <p>
-                Our multimodal VQA benchmark <i>V</i><sup>*</sup>Bench is built on 191 high-resolution images from SAM <d-cite key="SAM"></d-cite> with average resolution 2246 <span>&#215;</span> 1582.
+                To quantitatively evaluate MLLMs' ability in challenging scenarios where the image contains abundant and complex information and the visual information needed might not be easily found, we build a benchmark <i>V</i><sup>*</sup>Bench based on 191 high-resolution images from SAM <d-cite key="SAM"></d-cite> with an average image resolution of 2246 <span>&#215;</span> 1582.
     
-                <i>V</i><sup>*</sup>Bench contains two sub-tasks: attribute recognition and spatial relationship reasoning. The attribute recognition task has 115 samples and requires the model to recognize a certain type of attribute (<i>eg.</i> color, material) of an object. The spatial relationship reasoning task has 76 samples and asks the model to determine the relative spatial relationship between two objects. These tasks emphasize the perceptual capability of the multimodal models.
+                <i>V</i><sup>*</sup>Bench contains two sub-tasks: attribute recognition and spatial relationship reasoning. The attribute recognition task has 115 samples and requires the model to recognize a certain type of attribute (<i>eg.</i> color, material) of an object. The spatial relationship reasoning task has 76 samples and asks the model to determine the relative spatial relationship between two objects. These tasks focus on evaluating the detailed visual analysis capability of the multimodal models.
     
                 <d-figure>
                     <figure class="l-body">
@@ -150,7 +152,7 @@
         <section id="VisualSearchExp">
             <h2>Effectiveness of <i>V</i><sup>*</sup></h2>
             <p>
-                We evaluate different search strategies in terms of search length on 245 target objects in <i>V</i><sup>*</sup>Bench. The search length here is defined as the number of search steps from the initial image to the one where the target is located. We compare our LLM-guided search strategy with two baselines. The random baseline adopts the random strategy to pick a random sub-image to explore, and the sequential baseline searches the sub-images in sequential order. These two strategies are evaluated in breadth-first search (BFS) and depth-first search settings respectively.
+                We evaluate different search strategies in terms of search length on 245 target objects in <i>V</i><sup>*</sup>Bench. The search length here is defined as the number of search steps from the initial image to the patch where the target is located. We compare our LLM-guided search strategy with two baselines. The random baseline adopts the random strategy to pick a random sub-image to explore, and the sequential baseline searches the sub-images in sequential order. These two strategies are evaluated in breadth-first search (BFS) and depth-first search settings respectively.
                 <d-figure>
                     <img src="images/search_path.jpg" alt="<i>V</i><sup>*</sup> Results" width="50%" style="display: block; margin-left: auto; margin-right: auto;">
                     <figcaption>Evaluation of different search strategies in terms of search length on <i>V</i><sup>*</sup>Bench. Our LLM-guided search could greatly reduce the average search length and both two guiding cues are helpful for the search process</figcaption>
@@ -164,6 +166,19 @@
                             Examples of the LLM-guided visual search process. Click the arrow to see different step of the visual search process. Click the small images at the bottom to choose different examples.
                         </figcaption>
                     </figure>
+                </d-figure>
+
+
+                To further study the efficiency of <i>V</i><sup>*</sup> algorithm and draw parallels with cognitive science research in visual search, we conduct comparisons between our search outcomes and human behaviors using the COCO-Search18 dataset <d-cite key="cocosearch18"></d-cite>. COCO-Search18 records people's eye fixations when searching for a specific target object in natural scene images. We convert the ground-truth human fixation sequence on each sample to a 2D heatmap and use it as guidance during the search. Interestingly, <i>V</i><sup>*</sup> algorithm can achieve similar efficiency to the human fixations.
+
+                <d-figure>
+                    <img src="images/cocosearch_result.jpg" alt="Coco search Results" width="50%" style="display: block; margin-left: auto; margin-right: auto;">
+                    <figcaption>Compare our LLM-guided <i>V</i><sup>*</sup> visual search algorithm with the human fixation and other search strategies on COCO-Search18.</figcaption>
+                </d-figure>
+
+                <d-figure>
+                    <img src="images/cocosearch_vis.jpg" alt="Coco search Visualization" width="60%" style="display: block; margin-left: auto; margin-right: auto;">
+                    <figcaption> Visualization of search cues of our <i>V</i><sup>*</sup> algorithm and human fixation on COCO-Search18. Humans tend to focus on center regions or salient objects while our model focuses on a larger contextual region.</figcaption>
                 </d-figure>
                 
             </p>
