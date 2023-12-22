@@ -78,6 +78,11 @@
   }
 }
 
+@media screen and (max-width: 768px) {
+  .content-bar {
+      display: none;
+  }
+}
 
 .byline {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
