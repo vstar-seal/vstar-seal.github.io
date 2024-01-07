@@ -8,6 +8,7 @@
         <script src="https://d3js.org/d3-collection.v1.min.js"></script>
         <script src="https://rawgit.com/nstrayer/slid3r/master/dist/slid3r.js"></script>
         <script src="cross_fade.js"></script>
+        <script type="module" src="https://gradio.s3-us-west-2.amazonaws.com/3.35.2/gradio.js"></script>
         <link rel="stylesheet" href="style.css">
         <link rel="icon" type="favicon/png" href="favicon.png">
         
@@ -23,6 +24,7 @@
               <div class="button-container">
                 <a href="https://arxiv.org/abs/2312.14135" class="button">Paper</a>
                 <a href="https://github.com/penghao-wu/vstar" class="button">Code</a>
+                <a href="https://craigwu-vstar.hf.space" class="button">Demo</a>
               </div>
             </div>
             <div class="header-image">
@@ -145,7 +147,8 @@
                 <d-figure>
                         <img src="images/table.jpg" alt="<i>V</i><sup>*</sup> Results" width="60%" style="display: block; margin-left: auto; margin-right: auto;">
                         <figcaption>Evaluation of multimodal systems on <i>V</i><sup>*</sup>Bench. Our model shows superior performance, validating the necessity of incorporating the visual search mechanism into MLLMs.</figcaption>
-                </d-figure>
+                </d-figure> 
+                <gradio-app src="https://craigwu-vstar.hf.space"></gradio-app>
             </p>
         </section>
         
